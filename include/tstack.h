@@ -2,7 +2,8 @@
 #ifndef INCLUDE_TSTACK_H_
 #define INCLUDE_TSTACK_H_
 
-#include <cstddef>  // size_t
+#include <cstddef>   // size_t
+#include <cstdint>   // SIZE_MAX
 #include <stdexcept>
 
 template<typename T>
@@ -14,8 +15,9 @@ class TStack {
 
     void grow() {
         if (capacity == 0) capacity = 1;
+        // Проверка переполнения перед удвоением
         if (capacity > SIZE_MAX / 2) {
-            throw std::bad_alloc();  // переполнение
+            throw std::bad_alloc();
         }
         size_t newCapacity = capacity * 2;
         T* newArr = new T[newCapacity];
