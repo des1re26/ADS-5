@@ -1,11 +1,13 @@
 // Copyright 2025 NNTU-CS
 #include <string>
 #include <cctype>
+#include <vector>
 #include "tstack.h"
 
 std::string infx2pstfx(const std::string& inf) {
     TStack<char> stack;
-    std::string output;
+    std::vector<std::string> tokens;
+    std::string number;
     auto priority = [](char op) {
         if (op == '+' || op == '-') return 1;
         if (op == '*' || op == '/') return 2;
@@ -13,37 +15,41 @@ std::string infx2pstfx(const std::string& inf) {
     };
     for (char ch : inf) {
         if (std::isdigit(ch)) {
-            output += ch;
+            number += ch;
             continue;
+        } else {
+            if (!number.empty()) {
+                tokens.push_back(number);
+                number.clear();
+            }
         }
         if (ch == '(') {
             stack.push(ch);
-            continue;
-        }
-        if (ch == ')') {
+        } else if (ch == ')') {
             while (!stack.isEmpty() && stack.top() != '(') {
-                output += ' ';
-                output += stack.pop();
+                tokens.push_back(std::string(1, stack.pop()));
             }
             if (!stack.isEmpty()) stack.pop();
-            continue;
-        }
-        if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-            output += ' ';
+        } else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             while (!stack.isEmpty() && stack.top() != '(' &&
                    priority(stack.top()) >= priority(ch)) {
-                output += ' ';
-                output += stack.pop();
+                tokens.push_back(std::string(1, stack.pop()));
             }
             stack.push(ch);
-            continue;
         }
     }
-    while (!stack.isEmpty()) {
-        output += ' ';
-        output += stack.pop();
+    if (!number.empty()) {
+        tokens.push_back(number);
     }
-    return output;
+    while (!stack.isEmpty()) {
+        tokens.push_back(std::string(1, stack.pop()));
+    }
+    std::string result;
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        if (i != 0) result += ' ';
+        result += tokens[i];
+    }
+    return result;
 }
 
 int eval(const std::string& post) {
