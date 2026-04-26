@@ -2,6 +2,7 @@
 #include <string>
 #include <cctype>
 #include "tstack.h"
+
 std::string infx2pstfx(const std::string& inf) {
     TStack<char> stack;
     std::string output;
@@ -29,7 +30,8 @@ std::string infx2pstfx(const std::string& inf) {
         }
         if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             output += ' ';
-            while (!stack.isEmpty() && stack.top() != '(' && priority(stack.top()) >= priority(ch)) {
+            while (!stack.isEmpty() && stack.top() != '(' &&
+                   priority(stack.top()) >= priority(ch)) {
                 output += ' ';
                 output += stack.pop();
             }
@@ -43,6 +45,7 @@ std::string infx2pstfx(const std::string& inf) {
     }
     return output;
 }
+
 int eval(const std::string& post) {
     TStack<int> stack;
     std::string token;
